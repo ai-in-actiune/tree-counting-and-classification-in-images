@@ -3,6 +3,17 @@ tree-counting-and-classification-in-images
 
 proiect bazat pe invatare automata care isi propune sa numere copacii din imagini aeriene si sa le clasificein uscati/verzi
 
+## Contributing
+
+This project is built by amazing volunteers and you can be one of them! Here's a list of ways in [which you can contribute to this project](CONTRIBUTING.md).
+
+If you want to make any change to this repository, please **make a fork first**.
+
+If you see something that doesn't quite work the way you expect it to, open an Issue. Make sure to describe what you _expect to happen_ and _what is actually happening_ in detail.
+
+If you would like to suggest new functionality, open an Issue and mark it as a __[Feature request]__. Please be specific about why you think this functionality will be of use. If you can, please include some visual description of what you would like the UI to look like, if you are suggesting new UI elements. 
+
+
 Project Organization
 ------------
 
@@ -53,5 +64,28 @@ Project Organization
 
 
 --------
+
+## Run & Development
+
+``pip install -r requirements.txt ``
+
+
+## Feedback
+
+* Request a new feature on GitHub.
+* Vote for popular feature requests.
+* File a bug in GitHub Issues.
+* Email us with other feedback aiinactiune@gmail.md
+
+## License
+
+This project is licensed under the MPL 2.0 License - see the [LICENSE](LICENSE) file for details
+
+## About IAinActiune
+
+Started in 2020, IAinActiune is a civic tech NGO. We have a community of over 100 volunteers (ml engineer, entrepreneurs, programmers, project managers and more) who work pro-bono for developing ML solutions to solve social problems. #mlforsocialgood. If you want to learn more details about our projects [visit our site](https://www.iainactiune.md/) or if you want to talk to one of our staff members, please e-mail us at aiinactiune@gmail.md.
+
+Last, but not least, we rely on donations to ensure the infrastructure, logistics and management of our community that is widely spread across 11 timezones, coding for social change to make Moldova and the world a better place. If you want to support us, [you can do it here](https://iainactiune.md/).
+
 
 <p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>
