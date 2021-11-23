@@ -1,62 +1,33 @@
 import tqdm as tqdm
+from typing import Dict, List
 from urllib3 import PoolManager
 from pathlib import Path
 import logging
 from tqdm import tqdm
-urls = ['https://zenodo.org/record/4746605/files/2018_BART_4_322000_4882000_image_crop.laz?download=1',
-        'https://zenodo.org/record/4746605/files/2018_BART_4_322000_4882000_image_crop.tif?download=1',
-        'https://zenodo.org/record/4746605/files/2018_BART_4_322000_4882000_image_crop_CHM.tif?download=1',
-        'https://zenodo.org/record/4746605/files/2018_BART_4_322000_4882000_image_crop_hyperspectral.tif?download=1',
-        'https://zenodo.org/record/4746605/files/2018_HARV_5_733000_4698000_image_crop.laz?download=1',
-        'https://zenodo.org/record/4746605/files/2018_HARV_5_733000_4698000_image_crop.tif?download=1',
-        'https://zenodo.org/record/4746605/files/2018_HARV_5_733000_4698000_image_crop_CHM.tif?download=1',
-        'https://zenodo.org/record/4746605/files/2018_HARV_5_733000_4698000_image_crop_hyperspectral.tif?download=1',
-        'https://zenodo.org/record/4746605/files/2018_JERC_4_742000_3451000_image_crop.laz?download=1',
-        'https://zenodo.org/record/4746605/files/2018_JERC_4_742000_3451000_image_crop.tif?download=1',
-        'https://zenodo.org/record/4746605/files/2018_JERC_4_742000_3451000_image_crop_CHM.tif?download=1',
-        'https://zenodo.org/record/4746605/files/2018_JERC_4_742000_3451000_image_crop_hyperspectral.tif?download=1',
-        'https://zenodo.org/record/4746605/files/2018_MLBS_3_541000_4140000_image_crop.laz?download=1',
-        'https://zenodo.org/record/4746605/files/2018_MLBS_3_541000_4140000_image_crop.tif?download=1',
-        'https://zenodo.org/record/4746605/files/2018_MLBS_3_541000_4140000_image_crop2.laz?download=1',
-        'https://zenodo.org/record/4746605/files/2018_MLBS_3_541000_4140000_image_crop2.tif?download=1',
-        'https://zenodo.org/record/4746605/files/2018_MLBS_3_541000_4140000_image_crop2_CHM.tif?download=1',
-        'https://zenodo.org/record/4746605/files/2018_MLBS_3_541000_4140000_image_crop2_hyperspectral.tif?download=1',
-        'https://zenodo.org/record/4746605/files/2018_MLBS_3_541000_4140000_image_crop_CHM.tif?download=1',
-        'https://zenodo.org/record/4746605/files/2018_MLBS_3_541000_4140000_image_crop_hyperspectral.tif?download=1',
-        'https://zenodo.org/record/4746605/files/2018_NIWO_2_450000_4426000_image_crop.laz?download=1',
-        'https://zenodo.org/record/4746605/files/2018_NIWO_2_450000_4426000_image_crop.tif?download=1',
-        'https://zenodo.org/record/4746605/files/2018_NIWO_2_450000_4426000_image_crop_CHM.tif?download=1',
-        'https://zenodo.org/record/4746605/files/2018_NIWO_2_450000_4426000_image_crop_hyperspectral.tif?download=1',
-        'https://zenodo.org/record/4746605/files/2018_OSBS_4_405000_3286000_image.laz?download=1',
-        'https://zenodo.org/record/4746605/files/2018_OSBS_4_405000_3286000_image.tif?download=1',
-        'https://zenodo.org/record/4746605/files/2018_OSBS_4_405000_3286000_image_CHM.tif?download=1',
-        'https://zenodo.org/record/4746605/files/2018_SJER_3_258000_4106000_image.tif?download=1',
-        'https://zenodo.org/record/4746605/files/2018_SJER_3_258000_4106000_image_CHM.tif?download=1',
-        'https://zenodo.org/record/4746605/files/2018_SJER_3_259000_4110000_image.laz?download=1',
-        'https://zenodo.org/record/4746605/files/2018_SJER_3_259000_4110000_image.tif?download=1',
-        'https://zenodo.org/record/4746605/files/2018_SJER_3_259000_4110000_image_CHM.tif?download=1',
-        'https://zenodo.org/record/4746605/files/2018_TEAK_3_315000_4094000_image_crop.laz?download=1',
-        'https://zenodo.org/record/4746605/files/2018_TEAK_3_315000_4094000_image_crop_CHM.tif?download=1',
-        'https://zenodo.org/record/4746605/files/2019_DELA_5_423000_3601000_image_crop.laz?download=1',
-        'https://zenodo.org/record/4746605/files/2019_DELA_5_423000_3601000_image_crop.tif?download=1',
-        'https://zenodo.org/record/4746605/files/2019_DELA_5_423000_3601000_image_crop_CHM.tif?download=1',
-        'https://zenodo.org/record/4746605/files/2019_DELA_5_423000_3601000_image_crop_hyperspectral.tif?download=1',
-        'https://zenodo.org/record/4746605/files/2019_LENO_5_383000_3523000_image_crop.tif?download=1',
-        'https://zenodo.org/record/4746605/files/2019_LENO_5_383000_3523000_image_crop_CHM.tif?download=1',
-        'https://zenodo.org/record/4746605/files/2019_LENO_5_383000_3523000_image_crop_hyperspectral.tif?download=1',
-        'https://zenodo.org/record/4746605/files/2019_OSBS_5_405000_3287000_image2.tif?download=1',
-        'https://zenodo.org/record/4746605/files/2019_OSBS_5_405000_3287000_image2_CHM.tif?download=1',
-        'https://zenodo.org/record/4746605/files/2019_OSBS_5_405000_3287000_image2_hyperspectral.tif?download=1',
-        'https://zenodo.org/record/4746605/files/2019_OSBS_5_405000_3287000_image_crop.tif?download=1',
-        'https://zenodo.org/record/4746605/files/2019_OSBS_5_405000_3287000_image_crop2.tif?download=1',
-        'https://zenodo.org/record/4746605/files/2019_OSBS_5_405000_3287000_image_crop2_CHM.tif?download=1',
-        'https://zenodo.org/record/4746605/files/2019_OSBS_5_405000_3287000_image_crop2_hyperspectral.tif?download=1',
-        'https://zenodo.org/record/4746605/files/2019_OSBS_5_405000_3287000_image_crop_CHM.tif?download=1',
-        'https://zenodo.org/record/4746605/files/2019_OSBS_5_405000_3287000_image_crop_hyperspectral.tif?download=1',
-        'https://zenodo.org/record/4746605/files/2019_SJER_4_251000_4103000_image.tif?download=1',
-        'https://zenodo.org/record/4746605/files/2019_SJER_4_251000_4103000_image_CHM.tif?download=1',
-        'https://zenodo.org/record/4746605/files/2019_TOOL_3_403000_7617000_image.tif?download=1',
-        'https://zenodo.org/record/4746605/files/2019_TOOL_3_403000_7617000_image_CHM.tif?download=1']
+from hashlib import md5
+import pickle
+
+PROCESSED_NAMES_PICKLE = Path('processed_names.pickle')
+
+RAW_FILE = Path('raw_names.txt')
+
+
+def preprocess_raw() -> Dict[str, str]:
+    if PROCESSED_NAMES_PICKLE.exists():
+        return pickle.load(PROCESSED_NAMES_PICKLE.open('rb'))
+    if not RAW_FILE.exists():
+        raise Exception(f'`{RAW_FILE}` does not exist! You must create it.')
+    with RAW_FILE.open() as f:
+        data = f.read().split()
+        structured_data = {}
+        for i in range(0, len(data), 4):
+            structured_data.update({data[i]: data[i + 1][4:]})
+        with PROCESSED_NAMES_PICKLE.open('wb') as g:
+            g.write(pickle.dumps(structured_data))
+    return structured_data
+
+
+ARGS_FILE = Path('args.pickle')
 
 
 def download_data(url_list, save_dir):
