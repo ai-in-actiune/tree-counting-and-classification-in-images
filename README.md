@@ -1,7 +1,35 @@
 tree-counting-and-classification-in-images
 ==============================
+proiect bazat pe invatare automata care isi propune sa detecteze si sa clasifice copacii din imagini facute de drone. 
 
-proiect bazat pe invatare automata care isi propune sa numere copacii din imagini aeriene si sa le clasificein uscati/verzi
+problema: multi copaci verzi sunt taiati ilegal, copacii uscati nu sunt taiati la timp din cauza ca nu sunt resurse umane pentru a monitoriza bucati mari de padure.
+
+solutie: crearea unui sistem care sa invete sa detecteze si sa clasifice copaci rapid avand un set de date nou fara etichete. Sistemul va fi folosit:
+* pentru a eticheta semi-automat datele folosind modelele ML existente
+* sa antreneze modele noi folosind datele noi etichetate
+* sa identifice etichetele gresite
+
+## resurse utile:
+- model(pytorch): https://github.com/weecology/DeepForest
+- set de date: https://github.com/weecology/NeonTreeEvaluation
+- project template: https://github.com/drivendata/cookiecutter-data-science
+
+## get started
+
+### install
+#### virtualenv
+* apt install virtualenv
+* virtualenv -p python3 treedetect
+* source treedetect/bin/activate
+* pip install -r requirements.txt
+#### docker
+* docker build -t treedetect:1 -f Dockerfile .
+* docker run -it -d -p 8888:8888 -p 6006:6006  -v "$(pwd)":/work --name treedetectbox treedetect:1
+* docker exec -ti ocrbox bash
+* jupyter notebook --allow-root
+
+#### download data
+* python src/make_dataset.py
 
 ## Contributing
 
