@@ -11,6 +11,7 @@ solutie: crearea unui sistem care sa invete sa detecteze si sa clasifice copaci 
 
 ## resurse utile:
 - model(pytorch): https://github.com/weecology/DeepForest
+- [colab model](https://colab.research.google.com/drive/1gKUiocwfCvcvVfiKzAaf6voiUVL2KK_r?usp=sharing#scrollTo=f8MKNC3_Zrxk)
 - set de date: https://github.com/weecology/NeonTreeEvaluation
 - project template: https://github.com/drivendata/cookiecutter-data-science
 
