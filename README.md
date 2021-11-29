@@ -1,8 +1,8 @@
 tree-counting-and-classification-in-images
 ==============================
-proiect bazat pe invatare automata care isi propune sa detecteze si sa clasifice copacii din imagini facute de drone. 
+proiect bazat pe învățare automată care își propune să detecteze și să clasifice copacii din imagini făcute de drone. 
 
-problema: multi copaci verzi sunt taiati ilegal, copacii uscati nu sunt taiati la timp din cauza ca nu sunt resurse umane pentru a monitoriza bucati mari de padure.
+problema: mulți copaci verzi sunt tăiați ilegal, copacii uscați nu sunt tăiați la timp din cauză că nu sunt resurse umane pentru a monitoriza bucăți mari de pădure.
 
 solutie: crearea unui sistem care sa invete sa detecteze si sa clasifice copaci rapid avand un set de date nou fara etichete. Sistemul va fi folosit:
 * pentru a eticheta semi-automat datele folosind modelele ML existente
