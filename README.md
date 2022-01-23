@@ -23,11 +23,11 @@ solutie: crearea unui sistem care sa invete sa detecteze si sa clasifice copaci 
 * virtualenv -p python3 treedetect
 * source treedetect/bin/activate
 * pip install -r requirements.txt
+
 #### docker
 * docker build -t treedetect:1 -f Dockerfile .
-* docker run -it -d -p 8888:8888 -p 6006:6006  -v "$(pwd)":/work --name treedetectbox treedetect:1
-* docker exec -ti ocrbox bash
-* jupyter notebook --allow-root
+* docker run -it -d -p 8800:8888 -p 6000:6006  -v "$(pwd)":/work --name treedetectbox treedetect:1
+* go to http://localhost:8800
 
 #### download data
 * python src/make_dataset.py

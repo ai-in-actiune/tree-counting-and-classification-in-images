@@ -24,4 +24,6 @@ RUN pip3 --no-cache-dir install jupyter && \
  
 EXPOSE 8888
 
-CMD ["/bin/bash"]
+RUN pip3 install --upgrade deepforest albumentations pyyaml
+
+CMD ["jupyter", "notebook", "--allow-root"]
