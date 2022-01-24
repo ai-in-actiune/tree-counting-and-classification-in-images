@@ -19,8 +19,9 @@ RUN pip3 --no-cache-dir install jupyter && \
          "\nc.NotebookApp.open_browser = False" \
          "\nc.NotebookApp.token = ''" \
          > /root/.jupyter/jupyter_notebook_config.py
-         
- 
-EXPOSE 8888
 
-CMD ["/bin/bash"]
+# debug dependencies
+RUN pip3 install matplotlib
+
+EXPOSE 8888
+CMD jupyter notebook --allow-root --port 8888
