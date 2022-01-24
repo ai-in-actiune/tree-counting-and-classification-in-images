@@ -22,7 +22,4 @@ RUN pip3 --no-cache-dir install jupyter && \
          
  
 EXPOSE 8888
-
-RUN pip3 install --upgrade deepforest albumentations pyyaml
-
-CMD ["jupyter", "notebook", "--allow-root"]
+CMD jupyter notebook --allow-root --port 8888

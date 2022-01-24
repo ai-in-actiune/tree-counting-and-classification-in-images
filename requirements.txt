@@ -9,3 +9,6 @@ jupyter_bbox_widget
 deepforest
 notebook
 dict2xml
+matplotlib
+albumentations
+pyyaml
