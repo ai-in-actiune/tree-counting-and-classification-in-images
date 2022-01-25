@@ -1,12 +1,11 @@
 FROM python:3.8
 MAINTAINER Mosnoi Ion <moshnoi2000@gmail.com>
 
-WORKDIR "/work"
-
-
-COPY requirements.txt requirements.txt
 RUN apt-get update
 
+WORKDIR "/work"
+
+COPY requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt
 
 #
@@ -23,7 +22,4 @@ RUN pip3 --no-cache-dir install jupyter && \
          
  
 EXPOSE 8888
-
-RUN pip3 install --upgrade deepforest albumentations pyyaml
-
-CMD ["jupyter", "notebook", "--allow-root"]
+CMD jupyter notebook --allow-root --port 8888
