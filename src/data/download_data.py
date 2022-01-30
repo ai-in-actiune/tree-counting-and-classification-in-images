@@ -15,15 +15,16 @@ RAW_FILE = Path('raw_names.txt')
 
 
 def preprocess_raw() -> Dict[str, str]:
-    if PROCESSED_NAMES_PICKLE.exists():
-        return pickle.load(PROCESSED_NAMES_PICKLE.open('rb'))
-    if not RAW_FILE.exists():
-        raise Exception(f'`{RAW_FILE}` does not exist! You must create it.')
+    # if PROCESSED_NAMES_PICKLE.exists():
+    #     return pickle.load(PROCESSED_NAMES_PICKLE.open('rb'))
+    # if not RAW_FILE.exists():
+    #     raise Exception(f'`{RAW_FILE}` does not exist! You must create it.')
     with RAW_FILE.open() as f:
         data = f.read().split()
-        structured_data = {}
+        structured_data: Dict[str, str] = {}
         for i in range(0, len(data), 4):
-            structured_data.update({data[i]: data[i + 1][4:]})
+            if data[0].endswith('image_crop.tif'):
+                structured_data.update({data[i]: data[i + 1][4:]})
         with PROCESSED_NAMES_PICKLE.open('wb') as g:
             g.write(pickle.dumps(structured_data))
     return structured_data
@@ -99,4 +100,5 @@ def download_data(urls, save_dir, filenames: List[str or Path] = None, checksums
 
 
 if __name__ == '__main__':
-    download_data(**create_args(preprocess_raw()), verify=True)
+    print(preprocess_raw())
+    # download_data(**create_args(preprocess_raw()), verify=True)
