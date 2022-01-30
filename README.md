@@ -94,11 +94,54 @@ Project Organization
 
 --------
 
+
 ## Run & Development
+### Base(main) environment 
+#### Requirements
+```
+python 3.6
+pip
+```
+#### Installation
+```
+pip install -U virtualenv
 
-``pip install -r requirements.txt ``
+python -m virtualenv -p=python tree-count
+```
+`./tree-count/bin/activate` **linux based systems**
 
+`./tree-count/Scripts/activate` **win32 based systems**
+```
+pip install -r requirements.txt 
+```
 
+### Image processing
+
+For image processing we use [`labelImg`](https://github.com/tzutalin/labelImg).
+
+#### Installation
+
+In order not to pollute global python environment,
+it is advised using virtual environment tools(`virtualenv, pipenv, venv, anaconda etc.`)
+
+There can be used th main project environment or there can be created a new separate environment.
+
+##### Create new environment
+
+`python -m virtualenv -p=python labelImg`
+
+`pip install labelImg`
+
+##### Activate base environment
+
+`path/to/base/environment/bin/activate` **linux based systems**
+
+`path\to\base\environment\Scrips\activate` **win32 based systems**
+
+```
+pip install labelImg
+python -m labelImg
+```
 ## Feedback
 
 * Request a new feature on GitHub.
