@@ -2,9 +2,11 @@ from dict2xml import dict2xml
 from typing import Union
 from pathlib import Path
 import pandas as pd
+
+from deepforest import get_data, utilities
     
 
-def annotation_row_to_dict(annotation_row):
+def __annotation_row_to_dict(annotation_row):
     """
     Converts row from the dataframe representing the bbox of an object
     to a dict. A dict which is ready to be converted to xml,
@@ -88,7 +90,7 @@ def annotations_to_xml(annotations_df: pd.DataFrame, image_path: Union[str, Path
     
     xml_out = '<annotation>\n'
     xml_out += dict2xml(out_dict, indent="   ") + '\n'
-    xml_out += "\n".join([annotation_row_to_dict(row) for _, row in annotations_df.iterrows()])
+    xml_out += "\n".join([__annotation_row_to_dict(row) for _, row in annotations_df.iterrows()])
     xml_out += '\n</annotation>\n'
     
     if write_file:
@@ -98,3 +100,7 @@ def annotations_to_xml(annotations_df: pd.DataFrame, image_path: Union[str, Path
             the_file.write(xml_out)
     
     return xml_out
+
+
+def xml_to_annotations(xml_file_path):
+    return utilities.xml_to_annotations(xml_file_path)
