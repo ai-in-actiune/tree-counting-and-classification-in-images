@@ -10,6 +10,11 @@ from utils import xml_utils
 
 
 class DeepTreePredictor:
+    """
+    Given a model, predicts on images.
+    model is currently expected to be from 'deepforest'
+    """
+    
     def __init__(self, model) -> None:
         self.model = model
     
@@ -18,6 +23,17 @@ class DeepTreePredictor:
         return bboxes
 
     def predict_on_folder(self, folder_path, write_csv=False, write_xml=False):
+        """
+        Predicts on all images in folder
+        
+        Args:
+            folder_path: where is the folder to run on.
+            write_csv: Bool, weather it should write the csv for each image near that image, or not
+                       DataFrame with format <detection bbox, label, confidence>
+            write_xml: Writes the xml at the same path as the image it describes
+        Returns:
+            DataFrame with format <image_path, detection bbox, label, confidence>
+        """
         images_paths = sorted(glob(f"{str(folder_path)}/*.png"))
         accumulator_bboxes_dfs = []
         for img_path_str in images_paths:
@@ -34,7 +50,12 @@ class DeepTreePredictor:
         return folder_bboxes_df
 
 
-def get_model(model_folder_path):
+def get_model(model_folder_path=None):
+    """
+    Loads model at path.
+    Loads the labels.json also from that same path.
+    model_folder_path can be None, in order to use the default predictor
+    """
     if model_folder_path:
         folder_path = Path(model_folder_path)
         pathmodel = folder_path / "checkpoint.pl"
@@ -75,5 +96,5 @@ if __name__ == "__main__":
     write_csvs = args.write_csvs
     write_xmls = args.write_xmls
     
-    dtp = DeepTreePredictor(get_model(model_folder_path))
+    dtp = DeepTreePredictor(get_model(model_folder_path=model_folder_path))
     dtp.predict_on_folder(input_folder, write_csv=write_csvs, write_xml=write_xmls)
