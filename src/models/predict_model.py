@@ -7,7 +7,7 @@ from pathlib import Path
 from deepforest import main
 # internal
 from utils import xml_utils
-
+from utils.constants import *
 
 class DeepTreePredictor:
     """
@@ -44,9 +44,10 @@ class DeepTreePredictor:
                 xml_utils.annotations_to_xml(bboxes_df, img_path_str, write_file=True)
             if write_csv:
                 bboxes_df.to_csv(img_path.parent / f'{img_path.stem}.csv', index=False)
-            bboxes_df['image_path'] = img_path.name
+            bboxes_df[IMAGE_PATH] = img_path.name
             accumulator_bboxes_dfs.append(bboxes_df)
         folder_bboxes_df = pd.concat(accumulator_bboxes_dfs)
+        folder_bboxes_df.to_csv(Path(folder_path) / ALL_PREDICTIONS_CSV, index=False)
         return folder_bboxes_df
 
 
@@ -80,11 +81,9 @@ def get_args():
     parser.add_argument("-i", "--input_folder", type=str, required=True)
     parser.add_argument("-m", "--model_folder_path", type=str, required=False)
     parser.add_argument("-c", "--write_csvs", action="store_true",
-                        help="Just a flag argument. Where action='store_true' implies default=False. "
-                             "Adds camera sensor info from OSC")
+                        help="Just a flag argument. Where action='store_true' implies default=False.")
     parser.add_argument("-x", "--write_xmls", action="store_true",
-                        help="Just a flag argument. Where action='store_true' implies default=False. "
-                             "Adds rois's sphere poly if missing")
+                        help="Just a flag argument. Where action='store_true' implies default=False.")
     
     return parser.parse_args()
 
