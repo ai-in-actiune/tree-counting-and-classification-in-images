@@ -80,11 +80,9 @@ def get_args():
     parser.add_argument("-i", "--input_folder", type=str, required=True)
     parser.add_argument("-m", "--model_folder_path", type=str, required=False)
     parser.add_argument("-c", "--write_csvs", action="store_true",
-                        help="Just a flag argument. Where action='store_true' implies default=False. "
-                             "Adds camera sensor info from OSC")
+                        help="Just a flag argument. Where action='store_true' implies default=False.")
     parser.add_argument("-x", "--write_xmls", action="store_true",
-                        help="Just a flag argument. Where action='store_true' implies default=False. "
-                             "Adds rois's sphere poly if missing")
+                        help="Just a flag argument. Where action='store_true' implies default=False.")
     
     return parser.parse_args()
 
