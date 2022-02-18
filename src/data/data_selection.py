@@ -1,3 +1,4 @@
+import os
 import argparse
 import shutil
 import pandas as pd
@@ -33,6 +34,9 @@ def select_k_most_unreliable_predictions_from_folder(k: int, from_folder: Path, 
     image_weak_confidences_df = image_confidences_df.sort_values(ascending=True)[:k]
     output_predictions_df = initial_predictions_df[initial_predictions_df[IMAGE_PATH].apply(lambda x: x in image_weak_confidences_df)]
     
+    # make sure output folder exists
+    os.makedirs(output_folder, exist_ok=True)
+    
     output_predictions_df.to_csv(output_folder / ALL_PREDICTIONS_CSV, index=False)
     for img_path in image_weak_confidences_df.keys():
         shutil.move(from_folder / img_path, output_folder / img_path)
@@ -51,8 +55,8 @@ def get_args():
 
 if __name__ == "__main__":
     args = get_args()
-    input_folder = args.input_folder
-    output_folder = args.output_folder
+    input_folder = Path(args.input_folder)
+    output_folder = Path(args.output_folder)
     k_unsure = args.k_unsure
     
     select_k_most_unreliable_predictions_from_folder(k_unsure,
