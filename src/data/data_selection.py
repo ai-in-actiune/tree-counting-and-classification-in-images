@@ -26,7 +26,8 @@ def select_k_most_unreliable_predictions_from_folder(k: int, from_folder: Path, 
         Args:
             k: how many of the most unreliable to select
             from_folder: the folder path of the input described above
-            output_folder: the folder path of the output: in same structure as above
+            output_folder: the folder path of the output: in same structure as above.
+                           If folder does not exist, it is created.
         Returns:
             Nothing. But moves the k most uncertain predictions (images) to the output folder
     """
@@ -54,7 +55,7 @@ def select_k_most_unreliable_predictions_from_folder(k: int, from_folder: Path, 
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("-i", "--input_folder", type=str, required=True)
-    parser.add_argument("-o", "--output_folder", type=str, required=False)
+    parser.add_argument("-o", "--output_folder", type=str, required=True)
     parser.add_argument("-k", "--k_unsure", type=int, required=True, help="k unsure images to select and move to the 'needs-review' (output) folder")
     
     return parser.parse_args()
@@ -64,7 +65,7 @@ if __name__ == "__main__":
     args = get_args()
     input_folder = Path(args.input_folder)
     output_folder = Path(args.output_folder)
-    k_unsure = args.k_unsure
+    k_unsure = int(args.k_unsure)
     
     select_k_most_unreliable_predictions_from_folder(k_unsure,
                                                      from_folder=input_folder, output_folder=output_folder)
