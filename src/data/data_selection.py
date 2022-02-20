@@ -3,6 +3,7 @@ import argparse
 import shutil
 import pandas as pd
 from pathlib import Path
+from tqdm.auto import tqdm
 # internal
 from utils.constants import *
 
@@ -32,12 +33,18 @@ def select_k_most_unreliable_predictions_from_folder(k: int, from_folder: Path, 
     initial_predictions_df = pd.read_csv(from_folder / ALL_PREDICTIONS_CSV)
     image_confidences_df = initial_predictions_df.groupby(by=IMAGE_PATH)[CONFIDENCE_COL].mean()
     image_weak_confidences_df = image_confidences_df.sort_values(ascending=True)[:k]
-    output_predictions_df = initial_predictions_df[initial_predictions_df[IMAGE_PATH].apply(lambda x: x in image_weak_confidences_df)]
+    tqdm.pandas(desc=f"Selecting {k} weakest confidence images")
+    weakest_confidences_images_mask = initial_predictions_df[IMAGE_PATH].progress_apply(lambda x: x in image_weak_confidences_df)
+    output_predictions_df = initial_predictions_df[weakest_confidences_images_mask]
+    remaining_initial_predictions_df = initial_predictions_df[~weakest_confidences_images_mask]
+    
+    # update the remaining predictions_df
+    remaining_initial_predictions_df.to_csv(from_folder / ALL_PREDICTIONS_CSV, index=False)
     
     # make sure output folder exists
     os.makedirs(output_folder, exist_ok=True)
-    
     output_predictions_df.to_csv(output_folder / ALL_PREDICTIONS_CSV, index=False)
+    
     for img_path in image_weak_confidences_df.keys():
         shutil.move(from_folder / img_path, output_folder / img_path)
         xml_path = (from_folder / img_path).stem + '.xml'
