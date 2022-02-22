@@ -7,12 +7,25 @@ from pathlib import Path
 from deepforest import main
 # internal
 from utils import xml_utils
-
+from utils.constants import *
 
 class DeepTreePredictor:
     """
     Given a model, predicts on images.
-    model is currently expected to be from 'deepforest'
+    Model is currently expected to be from 'deepforest' lib, so current class is a wrapper.
+    Apart from wrapping the 'deepforest' predictor, DeepTreePredictor implements some utility methods
+    used for fast predict on folder with images.
+    
+    Outputting the xml/image is useful for tagging afterwards via LabelImg.
+    Outputting the csv is useful for fast handling and read/write via pandas.
+    
+    The output will be in the same given folder, right near each image,
+    since the output will be in the same name as the image.
+    e.g. folder_X/img1.png folder_X/img2.png
+    after calling:  folder_X/img1.png folder_X/img1.csv folder_X/img1.xml
+                    folder_X/img2.png folder_X/img2.csv folder_X/img2.xml
+    Outputting the csv or the xml is optional. Apart from these outputs, also a csv for the whole
+    images is generated under ALL_PREDICTIONS_CSV.
     """
     
     def __init__(self, model) -> None:
@@ -44,9 +57,10 @@ class DeepTreePredictor:
                 xml_utils.annotations_to_xml(bboxes_df, img_path_str, write_file=True)
             if write_csv:
                 bboxes_df.to_csv(img_path.parent / f'{img_path.stem}.csv', index=False)
-            bboxes_df['image_path'] = img_path.name
+            bboxes_df[IMAGE_PATH] = img_path.name
             accumulator_bboxes_dfs.append(bboxes_df)
         folder_bboxes_df = pd.concat(accumulator_bboxes_dfs)
+        folder_bboxes_df.to_csv(Path(folder_path) / ALL_PREDICTIONS_CSV, index=False)
         return folder_bboxes_df
 
 
