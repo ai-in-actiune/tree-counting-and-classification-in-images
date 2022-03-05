@@ -11,11 +11,11 @@ K_UNSURE="$3"
 MODEL_FOLDER_PATH="$4"
 
 # 1. PREDICT USING MODEL
-python predict_model.py -i $SELECT_FROM_FOLDER --write_csvs --write_xmls
+python ../models/predict_model.py -i $SELECT_FROM_FOLDER --write_csvs --write_xmls
 # [--model_folder_path $MODEL_FOLDER_PATH]
 
 # 2. SELECT DATA TO BE SENT TO THE ORACLE (=labeller)
-python data_selection.py \
+python ../data/data_selection.py \
     --input_folder $SELECT_FROM_FOLDER \
     --output_folder $OUTPUT_TO_FOLDER_TO_REVIEW \
     --k_unsure $K_UNSURE

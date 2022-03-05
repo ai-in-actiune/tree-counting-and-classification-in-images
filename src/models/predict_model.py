@@ -3,6 +3,7 @@ import json
 from glob import glob
 import pandas as pd
 from pathlib import Path
+from tqdm import tqdm
 # external
 from deepforest import main
 # internal
@@ -49,7 +50,7 @@ class DeepTreePredictor:
         """
         images_paths = sorted(glob(f"{str(folder_path)}/*.png"))
         accumulator_bboxes_dfs = []
-        for img_path_str in images_paths:
+        for img_path_str in tqdm(images_paths, desc="Predicting on images"):
             img_path = Path(img_path_str)
             bboxes_df = self.predict_image(img_path_str)
             
