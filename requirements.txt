@@ -10,5 +10,5 @@ deepforest
 notebook
 dict2xml
 matplotlib
-albumentations
+albumentations==1.0.3
 pyyaml
