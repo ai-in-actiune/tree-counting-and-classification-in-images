@@ -103,4 +103,8 @@ def annotations_to_xml(annotations_df: pd.DataFrame, image_path: Union[str, Path
 
 
 def xml_to_annotations(xml_file_path):
-    return utilities.xml_to_annotations(xml_file_path)
+    try:
+        return utilities.xml_to_annotations(xml_file_path)
+    except:
+        print("ERROR. defaultig to NO LABELS in image")
+        return pd.DataFrame()
