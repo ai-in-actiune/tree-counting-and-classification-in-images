@@ -11,7 +11,11 @@ K_UNSURE="$3"
 MODEL_FOLDER_PATH="$4"
 
 # 1. PREDICT USING MODEL
-python ../models/predict_model.py -i $SELECT_FROM_FOLDER --write_csvs --write_xmls
+python ../models/predict_model.py \
+-i $SELECT_FROM_FOLDER \
+--available_gpus 1 \
+--model_folder_path /content/drive/MyDrive/vork/ML/trees/tree-counting-and-classification-in-images/models/model1/deepforest_p5933_r6815 \
+--write_csvs --write_xmls
 # [--model_folder_path $MODEL_FOLDER_PATH]
 
 # 2. SELECT DATA TO BE SENT TO THE ORACLE (=labeller)
