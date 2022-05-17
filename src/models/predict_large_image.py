@@ -7,13 +7,14 @@ from torchvision.ops import nms
 import cv2 as cv
 import numpy as np
 import pandas as pd
+from tqdm import tqdm
 
 from utils.plotting import plot_bboxes
 from models.predict_model import get_model
 
 
 def predict_large_image(
-    numpy_image, model, patch_size=400, patch_overlap=0.05, iou_threshold=0.1
+    numpy_image, model, patch_size=400, patch_overlap=0.05, iou_threshold=0.1, should_display=False
 ):
     # crop original image
     windows = preprocess.compute_windows(
@@ -22,7 +23,7 @@ def predict_large_image(
 
     predictions_list = []
 
-    for window in windows:
+    for window in tqdm(windows, desc=f"Iterating sliding patches", disable=(not should_display)):
         crop = numpy_image[window.indices()]
         pred_df = model.predict_image(crop.astype(np.float32))
 
@@ -45,7 +46,9 @@ def predict_large_image(
     bboxes = bboxes[ixs]
     bboxes_df = pd.DataFrame(bboxes, columns=["xmin", "ymin", "xmax", "ymax"])
 
-    plot_bboxes(numpy_image.copy(), bboxes_df, (59, 255, 242))
+    numpy_image = plot_bboxes(numpy_image.copy(), bboxes_df, (59, 255, 242),
+                              DISPLAY=should_display)
+    return numpy_image
 
 
 if __name__ == "__main__":
