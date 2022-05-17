@@ -77,7 +77,8 @@ def get_model(model_path=None, checkpoint_path=None, available_gpus=0):
         with open(model_path.parent / "labels.json", 'r') as f:
             labels_dict = json.load(f)
         model = main.deepforest()
-        model.model.load_state_dict(torch.load(model_path))
+        torch_device = torch.device('cpu') if available_gpus == 0 else torch.device('gpu')
+        model.model.load_state_dict(torch.load(model_path, map_location=torch_device))
     elif checkpoint_path:
         checkpoint_path = Path(checkpoint_path)
         with open(checkpoint_path.parent / "labels.json", 'r') as f:

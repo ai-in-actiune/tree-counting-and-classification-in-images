@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import cv2 as cv
 
 
-def plot_bboxes(image, df, color=(0, 255, 0), thickness=1):
+def plot_bboxes(image, df, color=(0, 255, 0), thickness=1, DISPLAY=True):
     """
     Args:
         image: numpy.ndarray
@@ -17,5 +17,7 @@ def plot_bboxes(image, df, color=(0, 255, 0), thickness=1):
         p2 = (int(row['xmax']), int(row['ymax']))
         cv.rectangle(image, p1, p2, color=color, thickness=thickness, lineType=cv.LINE_AA)
 
-    plt.imshow(image[:, :, ::-1])
-    plt.show()
+    if DISPLAY:
+        plt.imshow(image[:, :, ::-1])
+        plt.show()
+    return image
