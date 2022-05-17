@@ -70,9 +70,9 @@ def get_model(model_path=None, checkpoint_path=None, available_gpus=0):
     """
     Loads model at path.
     Loads the labels.json also from that same path.
-    model_folder_path can be None, in order to use the default predictor
+    model_path can be None, in order to use the default predictor
     """
-    if model_folder_path:
+    if model_path:
         model_path = Path(model_path)
         with open(model_path.parent / "labels.json", 'r') as f:
             labels_dict = json.load(f)
