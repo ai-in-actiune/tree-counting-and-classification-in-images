@@ -1,8 +1,15 @@
+import os
+import json
 from pathlib import Path
 import torch
-import json
 # external
 from deepforest import main
+
+
+def save_model(model, at_folder_path=Path('./model'), model_name="deeptree"):
+    os.makedirs(at_folder_path, exist_ok=True)
+    torch.save(model.model.state_dict(), at_folder_path/model_name)
+    # TODO: save also labels_dict at same path
 
 
 def get_model(model_path=None, available_gpus=0):

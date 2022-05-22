@@ -1,33 +1,64 @@
+import os
 import argparse
 import neptune.new as neptune
+from pytorch_lightning.loggers import NeptuneLogger
 
+NEPTUNE_API_TOKEN = os.getenv("NEPTUNE_API_TOKEN", default="")
+NEPTUNE_PROJ_NAME = "octavf/tree-counting-and-classif"
+NEPTUNE_INSTANCE = None
 
 class NeptuneWrapper():
     def __init__(self, proj_name, api_token) -> None:
         self.proj_name = proj_name
         self.api_token = api_token
     
-    def init_nep_project(self, read_mode="read-only"):
+    def init_neptune_project(self, read_mode="read-only"):
         nep_project = neptune.init_project(name=self.proj_name,
                                            api_token=self.api_token,
-                                           mode=read_mode, )
+                                           mode=read_mode)
         return nep_project
 
+
+    # DATASET
+
     def upload_dataset(self, from_local_path='./dataset/', to_neptune_path='dataset/version/'):
-        nep_project = self.init_nep_project(read_mode="async")
+        nep_project = self.init_neptune_project(read_mode="async")
         nep_project[to_neptune_path].track_files(from_local_path)
         nep_project.wait()
         nep_project["dataset/latest"] = nep_project[to_neptune_path].fetch()
         nep_project.stop()
     
     def download_dataset_version(self, from_neptune_path="dataset/0.1", to_local_path='./dataset'):
-        nep_project = self.init_nep_project()
+        nep_project = self.init_neptune_project()
         nep_project.wait()
         nep_project[from_neptune_path].download(to_local_path)
         nep_project.stop()
         
     def download_latest_dataset(self, to_local_path='./dataset'):
         self.download_dataset_version(from_neptune_path="dataset/latest", to_local_path=to_local_path)
+
+
+    # EXPERIMENTS
+    
+    def get_pytorch_lightning_logger(self):
+        neptune_logger = NeptuneLogger(api_key=self.api_token, project=self.proj_name,
+                                       tags=["training", "deeptree"])
+        return neptune_logger
+    
+    def upload_experiment(self, model, precision, recall):
+        nep_project = self.init_neptune_project(read_mode="async")
+        nep_project['metrics/valid/precision'] = precision
+        nep_project['metrics/valid/recall'] = recall
+        nep_project.wait()
+        nep_project.stop()
+    
+
+def get_Neptune(proj_name=NEPTUNE_PROJ_NAME, api_token=NEPTUNE_API_TOKEN) -> NeptuneWrapper:
+    if (NEPTUNE_INSTANCE is None) \
+       or (NEPTUNE_INSTANCE.proj_name != proj_name) \
+       or (NEPTUNE_INSTANCE.api_token != api_token):
+        NEPTUNE_INSTANCE = NeptuneWrapper(proj_name, api_token)
+    return NEPTUNE_INSTANCE
 
 
 def run(proj_name, api_token,

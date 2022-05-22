@@ -10,6 +10,7 @@ from utils import xml_utils
 from utils.constants import *
 from models.deep_tree_model import get_model
 
+
 class DeepTreePredictor:
     """
     Given a model, predicts on images.
