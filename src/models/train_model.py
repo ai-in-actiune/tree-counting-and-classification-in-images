@@ -5,10 +5,10 @@ from pathlib import Path
 import yaml
 
 import pandas as pd
-from deepforest import main
 from tqdm import tqdm
 
 from utils.xml_utils import xml_to_annotations
+from models.deep_tree_model import get_model
 
 
 def extract_labels_as_csv(from_folder_path, to_file):
@@ -29,6 +29,8 @@ def train_model(
     valid_annotations: Path,
     config_path: Path,
     output_path: Path,
+    pretrained_path=None,
+    nbr_gpus=None
 ):
     """
     Args:
@@ -36,14 +38,20 @@ def train_model(
         valid_annotations: path to annotations file for validation
         config_path: path to hyper-parameters config file
         output_path: path to save the trained model and evaluation report
+        pretrained_model_path: optional path/string to pretrained pkl file.
+            If None, it will use the one from config_path.
+            If that is also None, deepforest's release.
+        nbr_gpus: optional int stating the number of available GPUs
+            If None, it will use the one from config_path.
     Returns:
         Nothing. It saves the model and evaluation report
     """
     loaded_config = yaml.safe_load(open(config_path))
-
-    m = main.deepforest()
-    m.use_release()
+    pretrained_path = loaded_config["pretrained_path"] if pretrained_path is None else pretrained_path
+    nbr_gpus = loaded_config["gpus"] if nbr_gpus is None else nbr_gpus
+    m = get_model(model_path=pretrained_path, available_gpus=nbr_gpus)
     m.config["epochs"] = loaded_config["epochs"]
+    m.config["train"]["epochs"] = loaded_config["epochs"]
     m.config["batch_size"] = loaded_config["batch_size"]
     m.config["save-snapshot"] = loaded_config["save-snapshot"]
     m.config["train"]["csv_file"] = str(train_annotations)

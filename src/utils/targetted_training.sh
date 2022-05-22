@@ -14,7 +14,7 @@ MODEL_FOLDER_PATH="$4"
 python ../models/predict_model.py \
 -i $SELECT_FROM_FOLDER \
 --available_gpus 1 \
---model_folder_path /content/drive/MyDrive/vork/ML/trees/tree-counting-and-classification-in-images/models/model1/deepforest_p5933_r6815 \
+--model_file_path /content/drive/MyDrive/vork/ML/trees/tree-counting-and-classification-in-images/models/model1/deepforest_p5933_r6815 \
 --write_csvs --write_xmls
 # [--model_folder_path $MODEL_FOLDER_PATH]
 
@@ -24,5 +24,7 @@ python ../data/data_selection.py \
     --output_folder $OUTPUT_TO_FOLDER_TO_REVIEW \
     --k_unsure $K_UNSURE
 
-# 3. RETRAIN ON NEWLY LABELED DATA
+# 3. SEND DATA TO BE LABELED TO/BY ORACLE
+
+# 4. RETRAIN ON NEWLY LABELED DATA
 # TODO

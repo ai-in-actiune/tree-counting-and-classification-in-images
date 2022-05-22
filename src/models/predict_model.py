@@ -1,15 +1,14 @@
 import argparse
-import json
+
 from glob import glob
 import pandas as pd
 from pathlib import Path
 from tqdm import tqdm
-# external
-from deepforest import main
-import torch
+
 # internal
 from utils import xml_utils
 from utils.constants import *
+from models.deep_tree_model import get_model
 
 class DeepTreePredictor:
     """
@@ -66,35 +65,6 @@ class DeepTreePredictor:
         return folder_bboxes_df
 
 
-def get_model(model_path=None, checkpoint_path=None, available_gpus=0):
-    """
-    Loads model at path.
-    Loads the labels.json also from that same path.
-    model_path can be None, in order to use the default predictor
-    """
-    if model_path:
-        model_path = Path(model_path)
-        with open(model_path.parent / "labels.json", 'r') as f:
-            labels_dict = json.load(f)
-        model = main.deepforest()
-        torch_device = torch.device('cpu') if available_gpus == 0 else torch.device('gpu')
-        model.model.load_state_dict(torch.load(model_path, map_location=torch_device))
-    elif checkpoint_path:
-        checkpoint_path = Path(checkpoint_path)
-        with open(checkpoint_path.parent / "labels.json", 'r') as f:
-            labels_dict = json.load(f)
-        model = main.deepforest.load_from_checkpoint(str(checkpoint_path),
-                                                     num_classes=len(labels_dict),
-                                                     label_dict=labels_dict)
-    else:
-        model = main.deepforest()
-        model.use_release()
-        
-    model.config["gpus"] = available_gpus
-    
-    return model
-
-
 def predict_on_folder(folder_path):
     dtp = DeepTreePredictor(get_model())
     dtp.predict_on_folder(folder_path)
@@ -103,8 +73,7 @@ def predict_on_folder(folder_path):
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("-i", "--input_folder", type=str, required=True)
-    parser.add_argument("-modm", "--model_folder_path", type=str, required=False)
-    parser.add_argument("-modc", "--checkpoint_path", type=str, required=False)
+    parser.add_argument("-m", "--model_file_path", type=str, required=False)
     parser.add_argument("-gpus", "--available_gpus", type=int, default=0, required=False)
     parser.add_argument("-c", "--write_csvs", action="store_true",
                         help="Just a flag argument. Where action='store_true' implies default=False.")
@@ -119,12 +88,11 @@ if __name__ == "__main__":
     # in
     input_folder = args.input_folder
     # model
-    model_folder_path = args.model_folder_path
-    checkpoint_path =  args.checkpoint_path
+    model_file_path = args.model_file_path
     available_gpus = args.available_gpus
     # out
     write_csvs = args.write_csvs
     write_xmls = args.write_xmls
 
-    dtp = DeepTreePredictor(get_model(model_path=model_folder_path, checkpoint_path=checkpoint_path, available_gpus=available_gpus))
+    dtp = DeepTreePredictor(get_model(model_path=model_file_path, available_gpus=available_gpus))
     dtp.predict_on_folder(input_folder, write_csv=write_csvs, write_xml=write_xmls)
