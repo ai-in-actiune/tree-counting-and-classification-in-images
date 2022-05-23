@@ -9,7 +9,7 @@ from tqdm import tqdm
 
 from utils.xml_utils import xml_to_annotations
 from models.deep_tree_model import get_model, save_model
-from data.neptune_ai.neptune_wrapper import get_Neptune
+from data.neptune_ai.neptune_wrapper import NeptuneWrapper
 
 
 def extract_labels_as_csv(from_folder_path, to_file):
@@ -67,7 +67,7 @@ def train_model(
     # prepare train
     m.create_trainer()
     if log_in_neptune:
-        neptune_logger = get_Neptune().get_pytorch_lightning_logger()
+        neptune_logger = NeptuneWrapper.get_pytorch_lightning_logger()
         m.trainer.logger = neptune_logger
     # train
     m.trainer.fit(m)

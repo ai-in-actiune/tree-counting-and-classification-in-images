@@ -3,9 +3,10 @@ import argparse
 import neptune.new as neptune
 from pytorch_lightning.loggers import NeptuneLogger
 
+
 NEPTUNE_API_TOKEN = os.getenv("NEPTUNE_API_TOKEN", default="")
-NEPTUNE_PROJ_NAME = "octavf/tree-counting-and-classif"
-NEPTUNE_INSTANCE = None
+NEPTUNE_PROJ_NAME = os.getenv("NEPTUNE_PROJ_NAME", default="octavf/tree-counting-and-classif")
+
 
 class NeptuneWrapper():
     def __init__(self, proj_name, api_token) -> None:
@@ -17,7 +18,6 @@ class NeptuneWrapper():
                                            api_token=self.api_token,
                                            mode=read_mode)
         return nep_project
-
 
     # DATASET
 
@@ -40,8 +40,9 @@ class NeptuneWrapper():
 
     # EXPERIMENTS
     
-    def get_pytorch_lightning_logger(self):
-        neptune_logger = NeptuneLogger(api_key=self.api_token, project=self.proj_name,
+    @staticmethod
+    def get_pytorch_lightning_logger(proj_name=NEPTUNE_PROJ_NAME, api_token=NEPTUNE_API_TOKEN):
+        neptune_logger = NeptuneLogger(api_key=api_token, project=proj_name,
                                        tags=["training", "deeptree"])
         return neptune_logger
     
@@ -51,14 +52,6 @@ class NeptuneWrapper():
         nep_project['metrics/valid/recall'] = recall
         nep_project.wait()
         nep_project.stop()
-    
-
-def get_Neptune(proj_name=NEPTUNE_PROJ_NAME, api_token=NEPTUNE_API_TOKEN) -> NeptuneWrapper:
-    if (NEPTUNE_INSTANCE is None) \
-       or (NEPTUNE_INSTANCE.proj_name != proj_name) \
-       or (NEPTUNE_INSTANCE.api_token != api_token):
-        NEPTUNE_INSTANCE = NeptuneWrapper(proj_name, api_token)
-    return NEPTUNE_INSTANCE
 
 
 def run(proj_name, api_token,
