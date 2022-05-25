@@ -4,8 +4,13 @@ import neptune.new as neptune
 from pytorch_lightning.loggers import NeptuneLogger
 
 
-NEPTUNE_API_TOKEN = os.getenv("NEPTUNE_API_TOKEN", default="")
-NEPTUNE_PROJ_NAME = os.getenv("NEPTUNE_PROJ_NAME", default="octavf/tree-counting-and-classif")
+def get_neptune_credentials(proj_name=None, api_token=None):
+    NEPTUNE_API_TOKEN = os.getenv("NEPTUNE_API_TOKEN",
+                                  default=api_token if api_token else "")
+    NEPTUNE_PROJ_NAME = os.getenv("NEPTUNE_PROJ_NAME",
+                                  default=proj_name if proj_name else "octavf/tree-counting-and-classif")
+    
+    return NEPTUNE_PROJ_NAME, NEPTUNE_API_TOKEN
 
 
 class NeptuneWrapper():
@@ -41,7 +46,8 @@ class NeptuneWrapper():
     # EXPERIMENTS
     
     @staticmethod
-    def get_pytorch_lightning_logger(proj_name=NEPTUNE_PROJ_NAME, api_token=NEPTUNE_API_TOKEN):
+    def get_pytorch_lightning_logger(proj_name=None, api_token=None):
+        proj_name, api_token = get_neptune_credentials(proj_name=proj_name, api_token=api_token)
         neptune_logger = NeptuneLogger(api_key=api_token, project=proj_name,
                                        tags=["training", "deeptree"])
         return neptune_logger

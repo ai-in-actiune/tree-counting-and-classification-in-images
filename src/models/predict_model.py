@@ -66,9 +66,14 @@ class DeepTreePredictor:
         return folder_bboxes_df
 
 
-def predict_on_folder(folder_path):
-    dtp = DeepTreePredictor(get_model())
-    dtp.predict_on_folder(folder_path)
+def predict_on_folder(folder_path, model_path=None,
+                      available_gpus=0, write_csv=True, write_xml=True):
+    if model_path:
+        dtp = DeepTreePredictor(get_model(model_path=model_file_path,
+                                          available_gpus=available_gpus))
+    else:
+        dtp = DeepTreePredictor(get_model())
+    dtp.predict_on_folder(folder_path, write_csv=write_csv, write_xml=write_xml)
 
 
 def get_args():
@@ -95,5 +100,6 @@ if __name__ == "__main__":
     write_csvs = args.write_csvs
     write_xmls = args.write_xmls
 
-    dtp = DeepTreePredictor(get_model(model_path=model_file_path, available_gpus=available_gpus))
-    dtp.predict_on_folder(input_folder, write_csv=write_csvs, write_xml=write_xmls)
+    predict_on_folder(input_folder,
+                      model_path=model_file_path, available_gpus=available_gpus,
+                      write_csv=write_csvs, write_xml=write_xmls)

@@ -2,19 +2,6 @@
 PYTHON_MODULES_PATH=../../src
 export PYTHONPATH=$PYTHON_MODULES_PATH
 
-
-# Input:
-# - prev pretrained_model_path & cfg
-# - neptune cfg
-# - labelbox cfg
-
-# 1. Download (all) Data for training
-# 1. Train new model
-# 1. Evaluate model (on valid); (and check if it is better than prev model)
-# 1. Predict using new model on unlabeled data
-# 1. Data Selection (top k unsure)
-# 1. Send data to be labeled to/by ORACLE as batch
-
 # /work/train_data_folder/
 SELECT_FROM_FOLDER="$1"
 # /work/train_data_to_review/
