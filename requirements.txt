@@ -10,5 +10,10 @@ deepforest
 notebook
 dict2xml
 matplotlib
-albumentations
+albumentations==1.0.3
 pyyaml
+requests~=2.27.1
+Pillow~=9.0.1
+selenium~=4.1.3
+webdriver-manager~=3.5.4
+neptune-client

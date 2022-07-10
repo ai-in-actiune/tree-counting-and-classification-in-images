@@ -1,2 +1,3 @@
 notebooks/.ipynb_checkpoints/*
+notebooks/.neptune/*
 __pycache__

@@ -19,19 +19,23 @@ solutie: crearea unui sistem care sa invete sa detecteze si sa clasifice copaci 
 
 ### install
 #### virtualenv
-* apt install virtualenv
-* virtualenv -p python3 treedetect
-* source treedetect/bin/activate
-* pip install -r requirements.txt
-
+```shell
+apt install virtualenv
+virtualenv -p python3 treedetect
+source treedetect/bin/activate
+pip install -r requirements.txt
+```
 #### docker
-* docker build -t treedetect:1 -f Dockerfile .
-* docker run -it -d -p 8800:8888 -p 6000:6006  -v "$(pwd)":/work --name treedetectbox treedetect:1
-* go to http://localhost:8800
+```shell
+docker build -t treedetect:1 -f Dockerfile .
+docker run -it -d -p 8800:8888 -p 6000:6006  -v "$(pwd)":/work --name treedetectbox treedetect:1
+```
+go to http://localhost:8800
 
 #### download data
-* python src/make_dataset.py
-
+```shell
+python src/make_dataset.py
+```
 ## Contributing
 
 This project is built by amazing volunteers and you can be one of them! Here's a list of ways in [which you can contribute to this project](CONTRIBUTING.md).
@@ -103,7 +107,7 @@ python 3.6
 pip
 ```
 #### Installation
-```
+```shell
 pip install -U virtualenv
 
 python -m virtualenv -p=python tree-count
@@ -111,7 +115,7 @@ python -m virtualenv -p=python tree-count
 `./tree-count/bin/activate` **linux based systems**
 
 `./tree-count/Scripts/activate` **win32 based systems**
-```
+```shell
 pip install -r requirements.txt 
 ```
 
