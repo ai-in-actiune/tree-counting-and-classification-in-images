@@ -26,3 +26,10 @@ class CFG:
     # LabelBox
     labelbox_enabled = "labelbox_enabled"
     labelbox_credentials = "labelbox_credentials"
+
+    # Roboflow
+    roboflow_enabled = "roboflow_enabled"
+    roboflow_credentials = "roboflow_credentials"
+    workspace_name = "workspace_name"
+    project_name = "project_name"
+    version = "version"

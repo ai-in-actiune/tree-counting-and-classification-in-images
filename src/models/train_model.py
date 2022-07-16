@@ -46,11 +46,9 @@ def train_model(config_dict):
     m.config["batch_size"] = config_dict[CFG.batch_size]
     m.config["save-snapshot"] = config_dict[CFG.save_snapshot]
     m.config["train"]["csv_file"] = str(config_dict[CFG.train_annotations])
-    m.config["train"]["root_dir"] = config_dict[CFG.crops_path] \
-        if config_dict[CFG.crops_path] else str(Path(config_dict[CFG.train_annotations]).parent)
+    m.config["train"]["root_dir"] = config_dict.get(CFG.crops_path, str(Path(config_dict.train_annotations).parent))
     m.config["validation"]["csv_file"] = str(config_dict[CFG.valid_annotations])
-    m.config["validation"]["root_dir"] = config_dict[CFG.crops_path] \
-        if config_dict[CFG.crops_path] else str(Path(config_dict[CFG.valid_annotations]).parent)
+    m.config["validation"]["root_dir"] = config_dict.get(CFG.crops_path, str(Path(config_dict.valid_annotations).parent))
     # prepare train
     m.create_trainer()
     if config_dict[CFG.neptune_enabled]:
