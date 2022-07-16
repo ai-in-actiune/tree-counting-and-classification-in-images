@@ -40,9 +40,10 @@ def split_files_at_path(folder_path: Path, files_extension=".xml", splits: Dict[
             
 
 def move_image_files_from_folder_to_folder(from_folder: Path, output_folder: Path):
+    os.makedirs(output_folder, exist_ok=True)
     for img_path in tqdm(list(from_folder.iterdir()), desc="Moving crops to labeled folder"):
         if img_path.suffix.lower() in ['.jpg', '.png', '.jpeg']:
-            shutil.move(img_path, output_folder / img_path.name)
+            shutil.move(img_path, Path(output_folder) / img_path.name)
             
 
 def select_k_most_unreliable_predictions_from_folder(k: int, from_folder: Path, output_folder: Path):

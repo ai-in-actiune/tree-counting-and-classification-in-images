@@ -18,8 +18,8 @@ def get_model(model_path=None, available_gpus=0):
     Loads the labels.json also from that same parent path.
     model_path can be None, in order to use the default predictor
     """
-    is_checkpoint_path = str(Path(model_path)).lower().endswith(('.pkl', '.pl'))
     if model_path:
+        is_checkpoint_path = str(Path(model_path)).lower().endswith(('.pkl', '.pl'))
         if is_checkpoint_path:
             model_path = Path(model_path)
             with open(model_path.parent / "labels.json", 'r') as f:

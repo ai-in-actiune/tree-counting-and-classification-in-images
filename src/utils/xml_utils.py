@@ -108,7 +108,7 @@ def xml_to_annotations(xml_file_path):
     try:
         return utilities.xml_to_annotations(xml_file_path)
     except:
-        print("ERROR. defaultig to NO LABELS in image")
+        print(f"WARNING. defaultig to NO LABELS in image {Path(xml_file_path).stem}")
         return pd.DataFrame()
 
 

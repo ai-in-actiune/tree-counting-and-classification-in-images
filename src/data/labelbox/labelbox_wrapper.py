@@ -6,5 +6,5 @@ class LabelBoxWrapper:
         return
     
     @staticmethod
-    def upload_the_new_tagging_batches(labelbox_credentials, from_path: Path):
+    def upload_the_new_pretagged_batches_from_path(labelbox_credentials, from_path: Path):
         return

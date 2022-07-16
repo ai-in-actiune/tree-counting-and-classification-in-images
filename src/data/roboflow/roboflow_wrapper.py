@@ -35,7 +35,7 @@ class RoboflowWrapper:
         return dataset
     
     @classmethod
-    def upload_the_new_tagging_batches(cls, credentials, from_path: Path):
+    def upload_the_new_pretagged_batches_from_path(cls, credentials, from_path: Path):
         project = cls.get_project(credentials)
         for item in glob(from_path):
             project.upload(item, num_retry_uploads=3)

@@ -66,36 +66,36 @@ def convert_predict_output_to_batches_to_be_labeled(config_dict):
     # 1. Move selected crops to labeled folder, while waiting for annotations,
     # and after that, just use them from the same folder.
     # Predictions stay in the output_folder and will be sent for tagging
-    data_selection.move_image_files_from_folder_to_folder(selection_output, config_dict.labeled_crops_path)
-    # 1. Split them into train / val (/test)
-    data_selection.split_files_at_path(selection_output, files_extension=".xml", splits=config_dict.splits)
+    data_selection.move_image_files_from_folder_to_folder(selection_output, config_dict.pretagged_crops_path)
+    # # 1. Split them into train / val (/test)
+    # data_selection.split_files_at_path(selection_output, files_extension=".xml", splits=config_dict.splits)
 
 
-def upload_the_new_tagging_batches_from_path(config_dict, from_path=Path("./")):
+def upload_the_new_pretagged_batches_from_path(config_dict, from_path=Path("./")):
     if config_dict.labelbox_enabled:
-        LabelBoxWrapper.upload_the_new_tagging_batches(config_dict.labelbox_credentials, from_path=from_path)
+        LabelBoxWrapper.upload_the_new_pretagged_batches_from_path(config_dict.labelbox_credentials, from_path=from_path)
     elif config_dict.roboflow_enabled:
-        RoboflowWrapper.upload_the_new_tagging_batches(config_dict.roboflow_credentials, from_path=from_path)
+        RoboflowWrapper.upload_the_new_pretagged_batches_from_path(config_dict.roboflow_credentials, from_path=from_path)
 
 
 def run_train_flow(config_dict):
     # 1. Download (all) Data for training
-    log("===> Download (all) Data for training")
+    log(">>>>>> Download (all) Data for training")
     download_dataset_for_train(config_dict)
     # 1. Train new model
-    log("===> Train new model")
+    log(">>>>>> Train new model")
     model_path, eval_report = train_model(config_dict)
     # 1. Evaluate model (on valid); (and check if it is better than prev model)
     # TODO (FOC): MAKE THE CHECK
     # 1. Predict using new model on unlabeled data
-    log("===> Predict using new model on unlabeled data")
+    log(">>>>>> Predict using new model on unlabeled data")
     predict_on_folder(config_dict.unlabeled_crops_path, available_gpus=config_dict.gpus)
     # 1. Data Selection (top k unsure); Move selected crops to labeled folder; Split them into train / val (/test)
-    log("===> Data Selection (top k unsure); Move selected crops to labeled folder; Split them into train / val (/test)")
+    log(">>>>>> Data Selection (top k unsure); Move selected crops to labeled folder; Split them into train / val (/test)")
     convert_predict_output_to_batches_to_be_labeled(config_dict)
     # 1. Send data to be labeled by ORACLE as batch
-    log("===> Send data to be labeled by ORACLE as batch")
-    upload_the_new_tagging_batches_from_path(config_dict)
+    log(">>>>>> Send data to be labeled by ORACLE as batch")
+    upload_the_new_pretagged_batches_from_path(config_dict)
     
 
 def get_args():
