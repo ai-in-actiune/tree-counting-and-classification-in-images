@@ -69,7 +69,7 @@ class DeepTreePredictor:
 def predict_on_folder(folder_path, model_path=None,
                       available_gpus=0, write_csv=True, write_xml=True):
     if model_path:
-        dtp = DeepTreePredictor(get_model(model_path=model_file_path,
+        dtp = DeepTreePredictor(get_model(model_path=model_path,
                                           available_gpus=available_gpus))
     else:
         dtp = DeepTreePredictor(get_model())
