@@ -16,8 +16,7 @@ import argparse
 import yaml
 from pathlib import Path
 
-from utils import AttributeDict
-from utils import xml_utils
+from utils import AttributeDict, xml_utils
 
 from data.labelbox.labelbox_wrapper import LabelBoxWrapper
 from data.roboflow.roboflow_wrapper import RoboflowWrapper
@@ -71,11 +70,13 @@ def convert_predict_output_to_batches_to_be_labeled(config_dict):
     # data_selection.split_files_at_path(selection_output, files_extension=".xml", splits=config_dict.splits)
 
 
-def upload_the_new_pretagged_batches_from_path(config_dict, from_path=Path("./")):
+def upload_the_new_pretagged_batches_from_path(config_dict):
     if config_dict.labelbox_enabled:
-        LabelBoxWrapper.upload_the_new_pretagged_batches_from_path(config_dict.labelbox_credentials, from_path=from_path)
+        LabelBoxWrapper.upload_the_new_pretagged_batches_from_path(config_dict.labelbox_credentials,
+                                                                   from_path=config_dict.pretagged_crops_path)
     elif config_dict.roboflow_enabled:
-        RoboflowWrapper.upload_the_new_pretagged_batches_from_path(config_dict.roboflow_credentials, from_path=from_path)
+        RoboflowWrapper.upload_the_new_pretagged_batches_from_path(config_dict.roboflow_credentials,
+                                                                   from_path=config_dict.pretagged_crops_path)
 
 
 def run_train_flow(config_dict):
