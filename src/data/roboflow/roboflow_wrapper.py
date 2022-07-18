@@ -43,7 +43,10 @@ class RoboflowWrapper:
     def download_dataset(cls, credentials, format="voc"):
         project = cls.get_project(credentials)
         if credentials.version is None:
+            # hacks again, because just using project.versions()[0] messes up the following calls
+            # e.g. of versions.id of 2 versions: ['treecounts/treecounts/2', 'treecounts/treecounts/1']
             proj_version = project.versions()[0]
+            proj_version = project.version(int(proj_version.id.split("/")[-1]))
         else:
             proj_version = project.version(credentials.version)
         dataset = proj_version.download(format)
@@ -126,4 +129,4 @@ if __name__ == "__main__":
     loaded_config = AttributeDict(yaml.safe_load(open(config_path)))
     if upload_folder_path:
         RoboflowWrapper.upload_the_new_pretagged_batches_from_path(loaded_config.roboflow_credentials,
-                                                                   from_path=loaded_config.pretagged_crops_path)
+                                                                   from_path=loaded_config.pretagged_crops_out_path)

@@ -65,7 +65,7 @@ def convert_predict_output_to_batches_to_be_labeled(config_dict):
     # 1. Move selected crops to labeled folder, while waiting for annotations,
     # and after that, just use them from the same folder.
     # Predictions stay in the output_folder and will be sent for tagging
-    data_selection.move_image_files_from_folder_to_folder(selection_output, config_dict.pretagged_crops_path)
+    data_selection.move_image_files_from_folder_to_folder(selection_output, config_dict.pretagged_crops_out_path)
     # # 1. Split them into train / val (/test)
     # data_selection.split_files_at_path(selection_output, files_extension=".xml", splits=config_dict.splits)
 
@@ -73,10 +73,10 @@ def convert_predict_output_to_batches_to_be_labeled(config_dict):
 def upload_the_new_pretagged_batches_from_path(config_dict):
     if config_dict.labelbox_enabled:
         LabelBoxWrapper.upload_the_new_pretagged_batches_from_path(config_dict.labelbox_credentials,
-                                                                   from_path=config_dict.pretagged_crops_path)
+                                                                   from_path=config_dict.pretagged_crops_out_path)
     elif config_dict.roboflow_enabled:
         RoboflowWrapper.upload_the_new_pretagged_batches_from_path(config_dict.roboflow_credentials,
-                                                                   from_path=config_dict.pretagged_crops_path)
+                                                                   from_path=config_dict.pretagged_crops_out_path)
 
 
 def run_train_flow(config_dict):
@@ -94,7 +94,7 @@ def run_train_flow(config_dict):
     log(">>>>>>")
     log("Predict using new model on unlabeled data")
     predict_model.predict_on_folder(config_dict.unlabeled_crops_path,
-                                    model_path=Path(config_dict.model_output_folder_path) / "checkpoint.pkl",
+                                    model_path=model_path,
                                     available_gpus=config_dict.gpus)
     # 1. Data Selection (top k unsure); Move selected crops to labeled folder; Split them into train / val (/test)
     log(">>>>>>")
@@ -112,7 +112,11 @@ def get_args():
     parser.add_argument("-cfg", "--config_path", type=str, required=True)
     parser.add_argument("-o", "--model_output_folder_path", type=str, required=False,
                         help="If not set, it will output in pretrained_model_path's parent folder")
-
+    parser.add_argument("-ucp", "--unlabeled_crops_path", type=str, required=False, default=None,
+                        help="If not set, it will use the one from cfg")
+    parser.add_argument("-pcop", "--pretagged_crops_out_path", type=str, required=False, default=None,
+                        help="If not set, it will use the one from cfg")
+    
     return parser.parse_args()
 
 
@@ -126,4 +130,8 @@ if __name__ == "__main__":
     loaded_config = yaml.safe_load(open(config_path))
     loaded_config.update({CFG.pretrained_path: pretrained_model_path,
                           CFG.model_output_folder_path: output_folder_path})
+    if args.unlabeled_crops_path is not None:
+        loaded_config[CFG.unlabeled_crops_path] = args.unlabeled_crops_path
+    if args.pretagged_crops_out_path is not None:
+        loaded_config[CFG.pretagged_crops_out_path] = args.pretagged_crops_out_path
     run_train_flow(AttributeDict(loaded_config))

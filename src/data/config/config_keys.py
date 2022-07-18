@@ -13,7 +13,7 @@ class CFG:
     model_output_folder_path = "model_output_folder_path"
     # Predict
     unlabeled_crops_path = "unlabeled_crops_path"
-    pretagged_crops_path = "pretagged_crops_path"
+    pretagged_crops_out_path = "pretagged_crops_out_path"
     
     # Dataset
     splits = "splits"

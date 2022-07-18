@@ -20,16 +20,15 @@ def get_model(model_path=None, available_gpus=0):
     model_path can be None, in order to use the default predictor
     """
     if model_path:
-        is_checkpoint_path = str(Path(model_path)).lower().endswith(('.pkl', '.pl'))
+        model_path = Path(model_path)
+        is_checkpoint_path = str(model_path).lower().endswith(('.pkl', '.pl'))
         if is_checkpoint_path:
-            model_path = Path(model_path)
             with open(model_path.parent / "labels.json", 'r') as f:
                 labels_dict = json.load(f)
             model = main.deepforest.load_from_checkpoint(str(model_path),
                                                          num_classes=len(labels_dict),
                                                          label_dict=labels_dict)
         else:
-            model_path = Path(model_path)
             with open(model_path.parent / "labels.json", 'r') as f:
                 labels_dict = json.load(f)
             model = main.deepforest()
