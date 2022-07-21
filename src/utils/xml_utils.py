@@ -2,6 +2,8 @@ from dict2xml import dict2xml
 from typing import Union
 from pathlib import Path
 import pandas as pd
+from glob import glob
+from tqdm import tqdm
 
 from deepforest import get_data, utilities
     
@@ -106,5 +108,17 @@ def xml_to_annotations(xml_file_path):
     try:
         return utilities.xml_to_annotations(xml_file_path)
     except:
-        print("ERROR. defaultig to NO LABELS in image")
+        print(f"WARNING. defaultig to NO LABELS in image {Path(xml_file_path).stem}")
         return pd.DataFrame()
+
+
+def xmls_to_csv_for_train(from_folder_path, to_csv_file):
+  xmls_paths = sorted(glob(f"{str(from_folder_path)}/*.xml"))
+  accumulator_bboxes_dfs = []
+  for xml_path_str in tqdm(xmls_paths,
+                           desc=f"Converting xmls to {Path(to_csv_file).name} for train eval"):
+    xml_path = Path(xml_path_str)
+    xml_as_df = xml_to_annotations(str(xml_path))
+    accumulator_bboxes_dfs.append(xml_as_df)
+  folder_bboxes_df = pd.concat(accumulator_bboxes_dfs)
+  folder_bboxes_df.to_csv(to_csv_file, index=False)

@@ -3,71 +3,57 @@ from glob import glob
 import argparse
 from pathlib import Path
 import yaml
+from datetime import datetime
 
 import pandas as pd
 from tqdm import tqdm
 
-from utils.xml_utils import xml_to_annotations
 from models.deep_tree_model import get_model, save_model
+from data.data_selection import extract_labels_as_csv
 from data.neptune_ai.neptune_wrapper import NeptuneWrapper
+from data.config.config_keys import CFG
 
 
-def extract_labels_as_csv(from_folder_path, to_file):
-    xml_paths = sorted(glob(f"{from_folder_path}/*.xml"))
+def train_model_w_params(config_path: Path, **kwargs):
+    """
+    Args:
+        config_path: path to hyper-parameters config file
+        kwargs: optional in order to use instead of the values from config_path
+            train_annotations: path to annotations file for training
+            valid_annotations: path to annotations file for validation
+            output_path: path to save the trained model and evaluation report
+    Returns:
+        It saves the model and evaluation report and returns the trained model_file_path and eval report
+    """
+    loaded_config = yaml.safe_load(open(config_path))
+    loaded_config.update(kwargs)
+    return train_model(loaded_config)
 
-    accumulator_bboxes_dfs = []
-    for xml_path_str in tqdm(xml_paths, desc="Converting xml files to csv"):
-        xml_path = Path(xml_path_str)
-        xml_as_df = xml_to_annotations(str(xml_path))
-        accumulator_bboxes_dfs.append(xml_as_df)
 
-    folder_bboxes_df = pd.concat(accumulator_bboxes_dfs)
-    folder_bboxes_df.to_csv(to_file, index=False)
-
-
-def train_model(
-    train_annotations: Path,
-    valid_annotations: Path,
-    config_path: Path,
-    output_path: Path,
-    pretrained_path=None,
-    nbr_gpus=None,
-    log_in_neptune=None
-):
+def train_model(config_dict):
     """
     Args:
         train_annotations: path to annotations file for training
         valid_annotations: path to annotations file for validation
-        config_path: path to hyper-parameters config file
-        output_path: path to save the trained model and evaluation report
-        pretrained_model_path: optional path/string to pretrained pkl file.
-            If None, it will use the one from config_path.
-            If that is also None, deepforest's release.
-        nbr_gpus: optional int stating the number of available GPUs
-            If None, it will use the one from config_path.
-        log_in_neptune: optional bool stating if should neptune-log during training
-            If None, it will use the one from config_path.
+        config_dict: hyper-parameters and paths config dict
     Returns:
-        It saves the model and evaluation report and returns the trained model_file_path
+        It saves the model and evaluation report and returns the trained model_file_path and eval report
     """
-    loaded_config = yaml.safe_load(open(config_path))
-    pretrained_path = loaded_config["pretrained_path"] if pretrained_path is None else pretrained_path
-    nbr_gpus = loaded_config["gpus"] if nbr_gpus is None else nbr_gpus
-    log_in_neptune = loaded_config["log_in_neptune"] if log_in_neptune is None else log_in_neptune
     # setup model
-    m = get_model(model_path=pretrained_path, available_gpus=nbr_gpus)
-    m.config["epochs"] = loaded_config["epochs"]
-    m.config["train"]["epochs"] = loaded_config["epochs"]
-    m.config["batch_size"] = loaded_config["batch_size"]
-    m.config["save-snapshot"] = loaded_config["save-snapshot"]
-    m.config["train"]["csv_file"] = str(train_annotations)
-    m.config["train"]["root_dir"] = str(train_annotations.parent)
-    m.config["validation"]["csv_file"] = str(valid_annotations)
-    m.config["validation"]["root_dir"] = str(valid_annotations.parent)
+    m = get_model(model_path=config_dict[CFG.pretrained_path], available_gpus=config_dict[CFG.gpus])
+    m.config["epochs"] = config_dict[CFG.epochs]
+    m.config["train"]["epochs"] = config_dict[CFG.epochs]
+    m.config["batch_size"] = config_dict[CFG.batch_size]
+    m.config["save-snapshot"] = config_dict[CFG.save_snapshot]
+    m.config["train"]["csv_file"] = str(config_dict[CFG.train_annotations])
+    m.config["train"]["root_dir"] = config_dict.get(CFG.crops_path, str(Path(config_dict.train_annotations).parent))
+    m.config["validation"]["csv_file"] = str(config_dict[CFG.valid_annotations])
+    m.config["validation"]["root_dir"] = config_dict.get(CFG.crops_path, str(Path(config_dict.valid_annotations).parent))
     # prepare train
     m.create_trainer()
-    if log_in_neptune:
-        neptune_logger = NeptuneWrapper.get_pytorch_lightning_logger()
+    if config_dict[CFG.neptune_enabled]:
+        neptune_logger = NeptuneWrapper.get_pytorch_lightning_logger(proj_name=config_dict[CFG.neptune_proj_name],
+                                                                     api_token=config_dict[CFG.neptune_api_token])
         m.trainer.logger = neptune_logger
     # train
     m.trainer.fit(m)
@@ -77,6 +63,7 @@ def train_model(
         root_dir=m.config["validation"]["root_dir"],
     )
     # save training results
+    output_path = config_dict[CFG.model_output_folder_path]
     os.makedirs(output_path, exist_ok=True)
     eval_report_df = eval_report["results"]
     eval_report_df.to_csv(output_path / "report.csv", index=False)
@@ -85,9 +72,10 @@ def train_model(
     # save model @ torch
     precision = eval_report["box_precision"] * 100
     recall = eval_report["box_recall"] * 100
-    trained_model_name = f'deeptree_precision{precision:.2f}_recall{recall:.2f}'
+    time_identifier = datetime.now().strftime("y%Ym%md%dh%H")
+    trained_model_name = f'{time_identifier}_deeptree_precision{precision:.2f}_recall{recall:.2f}'
     save_model(m, at_folder_path=output_path, model_name=trained_model_name)
-    return output_path / trained_model_name
+    return output_path / trained_model_name, eval_report
 
 
 def get_args():
@@ -110,9 +98,9 @@ if __name__ == "__main__":
     extract_labels_as_csv(train_csv_path.parent, train_csv_path)
     extract_labels_as_csv(valid_csv_path.parent, valid_csv_path)
 
-    train_model(
+    train_model_w_params(
         train_annotations=train_csv_path,
         valid_annotations=valid_csv_path,
         config_path=config_path,
-        output_path=output_path,
+        model_output_folder_path=output_path
     )
