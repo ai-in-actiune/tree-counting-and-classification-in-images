@@ -8,7 +8,7 @@ from deepforest import main
 
 def save_model(model, at_folder_path=Path('./model'), model_name="deeptree"):
     os.makedirs(at_folder_path, exist_ok=True)
-    torch.save(model.model.state_dict(), at_folder_path/model_name)
+    torch.save(model.model.state_dict(), at_folder_path+model_name)
     with open(Path(at_folder_path) / "labels.json", "w+") as outfile:
         json.dump(model.label_dict, outfile)
 

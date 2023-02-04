@@ -64,18 +64,20 @@ def train_model(config_dict):
     )
     # save training results
     output_path = config_dict[CFG.model_output_folder_path]
+    print(['output_path', output_path, CFG.model_output_folder_path ])
     os.makedirs(output_path, exist_ok=True)
     eval_report_df = eval_report["results"]
-    eval_report_df.to_csv(output_path / "report.csv", index=False)
+    print(['output_path', output_path, CFG.model_output_folder_path ])
+    eval_report_df.to_csv(output_path + "report.csv", index=False)
     # save checkpoint
-    m.trainer.save_checkpoint(output_path / "checkpoint.pkl")
+    m.trainer.save_checkpoint(output_path + "checkpoint.pkl")
     # save model @ torch
     precision = eval_report["box_precision"] * 100
     recall = eval_report["box_recall"] * 100
     time_identifier = datetime.now().strftime("y%Ym%md%dh%H")
     trained_model_name = f'{time_identifier}_deeptree_precision{precision:.2f}_recall{recall:.2f}'
     save_model(m, at_folder_path=output_path, model_name=trained_model_name)
-    return output_path / trained_model_name, eval_report
+    return output_path + trained_model_name, eval_report
 
 
 def get_args():

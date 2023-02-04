@@ -32,7 +32,7 @@ def pixel_to_geo_coordinates(
         top_lat, bottom_lat = bottom_lat, top_lat
     if top_long > bottom_long:
         top_long, bottom_long = bottom_long, top_long
-    return top_lat + x / image_w * (bottom_lat - top_lat), top_long + x / image_w * (bottom_long - top_long)
+    return top_lat + x / image_w * (bottom_lat - top_lat), top_long + y / image_h * (bottom_long - top_long)
 
 
 def get_coordinates_from_image(image_path_or_fp: Union[str, os.PathLike], *pixels: Union[int, Tuple[int, int]]) -> \
